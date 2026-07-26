@@ -9,6 +9,7 @@ import os
 import sys
 from pathlib import Path
 
+import pandas as pd
 import streamlit as st
 
 sys.path.append(str(Path(__file__).parent / "src"))
@@ -62,10 +63,9 @@ if st.button("Ask", type="primary", disabled=not question.strip()):
 
     if r["status"] == "answered":
         st.markdown(f"**What was computed:** {r['explanation']}")
-        st.dataframe(r["rows"], column_config=None, width="stretch",
-                     hide_index=True) if not r["columns"] else st.dataframe(
-            {c: [row[i] for row in r["rows"]] for i, c in enumerate(r["columns"])},
-            width="stretch", hide_index=True)
+        if r["columns"]:
+            st.dataframe(pd.DataFrame(r["rows"], columns=r["columns"]),
+                         width="stretch", hide_index=True)
         if r["truncated"]:
             st.caption(f"Showing the first {r['row_cap']} rows (hard cap).")
         st.markdown("**SQL that ran** (read-only connection, "
