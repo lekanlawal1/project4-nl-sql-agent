@@ -1,6 +1,6 @@
 # NL→SQL Analyst Agent — Ask the Churn Database in Plain English
 
-**Live demo:** _deploying — link coming after Streamlit Cloud setup_ · **Stack:** Python · Gemini (structured output) · DuckDB · Streamlit
+**Live demo:** https://project4-nl-sql-agent-8cmg7fua3ja7m8xqbfomgw.streamlit.app · **Stack:** Python · Gemini (structured output) · DuckDB · Streamlit
 
 ## Problem statement
 
