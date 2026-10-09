@@ -15,8 +15,10 @@ import streamlit as st
 sys.path.append(str(Path(__file__).parent / "src"))
 import db  # noqa: E402
 from agent import Agent  # noqa: E402
+import portfolio_theme  # noqa: E402
 
 st.set_page_config(page_title="Churn Analyst Agent", layout="centered")
+portfolio_theme.apply(accent="#8A4DFF", anchor="agent", case_study="projects/project4.html")
 
 st.title("Ask the Churn Database")
 st.caption(
