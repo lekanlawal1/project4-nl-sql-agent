@@ -1,11 +1,11 @@
-"""Query guardrails — every check the SQL must pass BEFORE it touches data.
+"""Query guardrails - every check the SQL must pass BEFORE it touches data.
 
 Layered on purpose (an attacker or a hallucination has to beat all of them,
 plus the read-only connection underneath):
 
-  1. shape        — exactly one statement, and it starts with SELECT or WITH
-  2. denylist     — no write/DDL/extension/system keywords anywhere
-  3. plan check   — DuckDB EXPLAIN on the read-only connection: the binder
+  1. shape - exactly one statement, and it starts with SELECT or WITH
+  2. denylist - no write/DDL/extension/system keywords anywhere
+  3. plan check - DuckDB EXPLAIN on the read-only connection: the binder
                     resolves every table/column WITHOUT executing, so a
                     hallucinated column is caught by the database's own
                     parser, not by a regex trying to reimplement SQL
@@ -20,7 +20,7 @@ from dataclasses import dataclass
 
 # Statements/keywords with no business in a read-only analyst query. PRAGMA,
 # SET, INSTALL/LOAD, ATTACH, COPY and EXPORT are blocked because they touch
-# files, settings, or extensions — exfiltration and escape hatches, not analysis.
+# files, settings, or extensions - exfiltration and escape hatches, not analysis.
 DENY = re.compile(
     r"\b(drop|delete|update|insert|alter|create|replace|truncate|merge|grant|revoke|"
     r"attach|detach|copy|export|import|install|load|pragma|set|reset|call|vacuum|"
@@ -51,14 +51,14 @@ def validate(sql: str, con) -> Verdict:
 
     # 2. denylist
     if m := DENY.search(bare):
-        return Verdict(False, f"blocked keyword: {m.group(0).upper()} — this assistant is read-only")
+        return Verdict(False, f"blocked keyword: {m.group(0).upper()} - this assistant is read-only")
 
     # 3. plan check: let DuckDB's binder verify every identifier exists.
     #    EXPLAIN builds the plan without executing, so this is free and exact.
     try:
         con.execute(f"EXPLAIN {bare}")
     except duckdb_errors() as e:
-        return Verdict(False, f"couldn't verify this query is safe to run — {first_line(e)}")
+        return Verdict(False, f"couldn't verify this query is safe to run - {first_line(e)}")
     return Verdict(True)
 
 

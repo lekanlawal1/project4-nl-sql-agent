@@ -2,7 +2,7 @@
 
 Defense in depth starts here: the DuckDB connection itself is opened
 read_only=True, so even if every other guardrail failed, a write statement
-dies at the engine — safety enforced by the database, not by a prompt.
+dies at the engine - safety enforced by the database, not by a prompt.
 """
 
 import os
@@ -20,7 +20,7 @@ ROW_CAP = 200          # answers are for reading, not exporting
 TIMEOUT_S = 10         # runaway-query ceiling
 
 # Hand-written data dictionary: introspection gives names/types; this gives
-# meaning. Both are fed to the model — names alone invite wrong guesses about
+# meaning. Both are fed to the model - names alone invite wrong guesses about
 # semantics (e.g. churned=1 means LEFT, not stayed).
 DESCRIPTIONS = {
     "features": "One row per player present in both FIFA editions (the modeling table). "
@@ -40,7 +40,7 @@ def connect() -> duckdb.DuckDBPyConnection:
 
 
 def introspect(con) -> str:
-    """Render the live schema as prompt text. Called fresh at startup — the
+    """Render the live schema as prompt text. Called fresh at startup - the
     model never works from a remembered or hand-maintained schema."""
     lines = []
     tables = [r[0] for r in con.execute(
@@ -50,7 +50,7 @@ def introspect(con) -> str:
             "SELECT column_name, data_type FROM information_schema.columns "
             "WHERE table_name = ? ORDER BY ordinal_position", [t]).fetchall()
         desc = DESCRIPTIONS.get(t, "")
-        lines.append(f"TABLE {t} — {desc}")
+        lines.append(f"TABLE {t} - {desc}")
         lines.append("  " + ", ".join(f"{c} {d}" for c, d in cols))
     # Category values the model would otherwise guess at
     for t, c in [("features", "position_group"), ("features", "age_band")]:
@@ -74,7 +74,7 @@ def run_capped(con, sql: str):
 
     Returns (columns, rows, truncated). The cap is applied by wrapping, so it
     holds regardless of what LIMIT the model wrote. Timeout is enforced with
-    con.interrupt() from a watchdog thread — DuckDB has no statement_timeout.
+    con.interrupt() from a watchdog thread - DuckDB has no statement_timeout.
     """
     wrapped = f"SELECT * FROM ({sql.rstrip(';')}) LIMIT {ROW_CAP + 1}"
     timer = threading.Timer(TIMEOUT_S, con.interrupt)

@@ -1,6 +1,6 @@
 """Streamlit demo: ask the churn database a question in plain English.
 
-Same stack as Project 2's demo on purpose — one language across the
+Same stack as Project 2's demo on purpose - one language across the
 portfolio, free GitHub-integrated hosting, secrets manager for the API key.
 Every answer shows the SQL that actually ran: verifiable, not vibes.
 """
@@ -51,9 +51,10 @@ def get_agent():
     return Agent(con, db.introspect(con), api_key=get_api_key())
 
 
-example = st.selectbox("Try an example question", ["— or type your own below —"] + EXAMPLES)
+PLACEHOLDER = "Pick one, or type your own below"
+example = st.selectbox("Try an example question", [PLACEHOLDER] + EXAMPLES)
 question = st.text_input("Your question",
-                         value="" if example.startswith("—") else example)
+                         value="" if example == PLACEHOLDER else example)
 
 if st.button("Ask", type="primary", disabled=not question.strip()):
     if not get_api_key():
@@ -87,13 +88,13 @@ if st.button("Ask", type="primary", disabled=not question.strip()):
                    "database. This is the system working as designed.")
     else:
         st.error(f"**Something went wrong:** {r['detail']}")
-        st.caption("The failure was contained — no partial or unverified result was shown.")
+        st.caption("The failure was contained - no partial or unverified result was shown.")
 
 with st.expander("How this stays safe"):
     st.markdown("""
-- **Read-only connection** — writes are impossible at the database-engine level, before any other check.
-- **Schema grounding** — the live schema is introspected at startup and injected into every prompt; the model never works from memory.
-- **Code-enforced validation** — one statement, SELECT-only, keyword denylist (DROP/DELETE/ATTACH/COPY/…), then DuckDB's own `EXPLAIN` verifies every table and column exists *before* execution. A hallucinated column returns "couldn't verify this query is safe," not a guess.
-- **Caps** — 10-second timeout, 200-row limit, both enforced in code.
-- **Honest uncertainty** — ambiguous questions get a clarifying question back; unanswerable ones get a refusal with the reason. Real examples of each: see `docs/guardrails.md`.
+- **Read-only connection** - writes are impossible at the database-engine level, before any other check.
+- **Schema grounding** - the live schema is introspected at startup and injected into every prompt; the model never works from memory.
+- **Code-enforced validation** - one statement, SELECT-only, keyword denylist (DROP/DELETE/ATTACH/COPY/…), then DuckDB's own `EXPLAIN` verifies every table and column exists *before* execution. A hallucinated column returns "couldn't verify this query is safe," not a guess.
+- **Caps** - 10-second timeout, 200-row limit, both enforced in code.
+- **Honest uncertainty** - ambiguous questions get a clarifying question back; unanswerable ones get a refusal with the reason. Real examples of each: see `docs/guardrails.md`.
 """)

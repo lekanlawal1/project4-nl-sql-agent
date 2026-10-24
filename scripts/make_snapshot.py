@@ -1,12 +1,12 @@
-"""Build data/churn_agent.duckdb — the deployable snapshot of Project 3's database.
+"""Build data/churn_agent.duckdb - the deployable snapshot of Project 3's database.
 
 Why a snapshot exists at all: Project 3's churn.duckdb is (correctly) gitignored
 and only materializes by running that project's pipeline, but a cloud-deployed
 agent can't reach a file on a laptop. This script copies the three analytical
-tables the agent needs, verbatim, from Project 3's DB — no re-cleaning, no
-re-modeling — and adds one table Project 3 publishes outside the DB:
+tables the agent needs, verbatim, from Project 3's DB - no re-cleaning, no
+re-modeling - and adds one table Project 3 publishes outside the DB:
 
-  model_scores — the out-of-fold churn-risk scores from Project 3's dashboard
+  model_scores - the out-of-fold churn-risk scores from Project 3's dashboard
   export (dashboard/data.js). Those are real Project 3 outputs (5-fold
   cross_val_predict); importing them makes "high churn score" questions
   answerable. They are joined on (name, club, age, overall); the handful of
